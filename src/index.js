@@ -1805,8 +1805,9 @@ async function runPipeline() {
             console.log('    [2] OpenAI model');
             console.log('    [3] Claude model');
             console.log('    [4] Other (MCP add url)');
-            console.log('    [5] Back to start');
-            const sc = await prompt('  Select [5]: ');
+            console.log('    [5] Back to start (restart flow)');
+            console.log('    [6] Security audit over (return to main menu)');
+            const sc = await prompt('  Select [6]: ');
             const sci = parseInt(sc.trim(), 10);
             if (sci === 1) {
               opts.securityScope = 'bentoboxds';
@@ -1837,6 +1838,8 @@ async function runPipeline() {
               opts._restartInteractive = true;
               secMenu = false;
               inMenu = false;
+            } else if (sci === 6) {
+              secMenu = false;
             } else {
               secMenu = false;
             }
@@ -1849,8 +1852,9 @@ async function runPipeline() {
             console.log('    [2] OpenAI model');
             console.log('    [3] Claude model');
             console.log('    [4] Other (MCP add url)');
-            console.log('    [5] Back to start');
-            const pc = await prompt('  Select [5]: ');
+            console.log('    [5] Back to start (restart flow)');
+            console.log('    [6] Privacy audit over (return to main menu)');
+            const pc = await prompt('  Select [6]: ');
             const pci = parseInt(pc.trim(), 10);
             if (pci === 1) {
               await runPrivacyReview(opts);
@@ -1879,6 +1883,8 @@ async function runPipeline() {
               opts._restartInteractive = true;
               privMenu = false;
               inMenu = false;
+            } else if (pci === 6) {
+              privMenu = false;
             } else {
               privMenu = false;
             }
