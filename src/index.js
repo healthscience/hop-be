@@ -468,6 +468,7 @@ async function runCypressE2E(opts) {
   else { console.log('[Cypress] Dev server ready. Waiting 8s for SSL init...\n'); await new Promise(r => setTimeout(r, 8000)); }
 
   // Run each spec individually for reliable per-spec tracking
+  const perSpec = [];
   let overallStatus = 'PASS';
   for (const spec of specs) {
     console.log(`\n[Cypress] Running spec: ${spec.relPath}`);
@@ -483,6 +484,7 @@ async function runCypressE2E(opts) {
     if (st === 'FAIL') overallStatus = 'FAIL';
     try { const { execSync } = await import('node:child_process'); execSync('fuser -k 9888/tcp 2>/dev/null || true'); } catch {}
     await recordTestRun(spec.relPath, st, '');
+    perSpec.push({ spec: spec.relPath, status: st });
     console.log(`[Cypress] ${spec.relPath} → ${st}`);
   }
   try { process.kill(-devServer.pid, 'SIGKILL'); } catch {}
@@ -1472,7 +1474,38 @@ async function runPipeline() {
 
     let cypress = null;
     if (opts.runCypress) {
-      cypress = await runCypressE2E(opts);
+      let runAgain = true;
+      while (runAgain) {
+        cypress = await runCypressE2E(opts);
+        if (!opts.interactive) { runAgain = false; break; }
+        console.log('\n  Post-run options:');
+        console.log('    [1] Test another folder');
+        console.log('    [2] Perform security audit');
+        console.log('    [3] Perform privacy audit');
+        console.log('    [4] Back to start');
+        const choice = await prompt('  Select [4]: ');
+        const ci = parseInt(choice.trim(), 10);
+        if (ci === 1) {
+          const allSpecs = await discoverCypressSpecs(opts.bentoboxRepo);
+          const folders = [...new Set(allSpecs.map(s => { const p = s.relPath.split('/'); return p.length >= 4 ? p[2] : '(root)'; }))];
+          console.log('  Folders:');
+          folders.forEach((f, i) => console.log(`    [${i + 1}] ${f}`));
+          const fc = await prompt('  Folder number: ');
+          const fi = parseInt(fc.trim(), 10);
+          if (fi > 0 && fi <= folders.length) {
+            opts._cypressFolder = folders[fi - 1];
+          }
+          opts.runCypress = true;
+        } else if (ci === 2) {
+          await runSecurityReview(opts);
+          runAgain = false;
+        } else if (ci === 3) {
+          opts.privacyReview = true;
+          runAgain = false;
+        } else {
+          runAgain = false;
+        }
+      }
     }
 
     const test = await runOrreryTester(opts);
