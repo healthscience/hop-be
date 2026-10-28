@@ -1165,27 +1165,49 @@ async function runSecurityReview(opts) {
 
   const issues = [];
 
-  // Package level: scan each repo for secrets/PII
-  console.log('  Scanning packages for secrets and PII...');
-  for (const repo of KNOWN_REPOS) {
-    if (repo.type === 'desktop') continue;
+  if (opts.securityScope === 'bentoboxds') {
+    // Scoped audit: selected folder specs + bentoboxds src + HOP websocket server
+    console.log('  Scanning BentoBoxDS selected folder + src...');
+    const bentoboxRepo = opts.bentoboxRepo;
+    const selectedFolder = opts._cypressFolder;
+    let entries = [];
+    try { entries = await fs.readdir(bentoboxRepo, { recursive: true }); } catch {}
+    for (const entry of entries) {
+      if (typeof entry !== 'string' || (!entry.endsWith('.js') && !entry.endsWith('.ts') && !entry.endsWith('.cy.js'))) continue;
+      if (entry.includes('node_modules')) continue;
+      if (selectedFolder && selectedFolder !== '(root)' && !entry.includes(selectedFolder) && !entry.startsWith('src')) continue;
+      const fullPath = path.join(bentoboxRepo, entry);
+      try {
+        const content = await fs.readFile(fullPath, 'utf8');
+        if (/sk_live|pk_live|AKIA[0-9A-Z]{16}|cert\.pem|key\.pem|eval\(|innerHTML/.test(content)) {
+          issues.push(`bentoboxds: potential security issue in ${entry}`);
+        }
+      } catch {}
+    }
+    console.log('  Scanning HOP websocket server...');
+    const hopIndex = path.join(opts.hopRepo, 'src', 'index.js');
     try {
-      await fs.access(repo.path);
-    } catch {
-      continue;
+      const content = await fs.readFile(hopIndex, 'utf8');
+      if (/WebSocketServer/.test(content) && !/origin/i.test(content)) {
+        issues.push('HOP: websocket server missing origin validation');
+      }
+      if (/cert\.pem|key\.pem/.test(content) && /rejectUnauthorized:\s*false/.test(content)) {
+        issues.push('HOP: TLS verification disabled');
+      }
+    } catch {}
+  } else {
+    // Package level: scan each repo for secrets/PII
+    console.log('  Scanning packages for secrets and PII...');
+    for (const repo of KNOWN_REPOS) {
+      if (repo.type === 'desktop') continue;
+      try { await fs.access(repo.path); } catch { continue; }
+      const repoIssues = await scanRepoForSecrets(repo);
+      if (repoIssues.length > 0) issues.push(...repoIssues.map(i => `${repo.name}: ${i}`));
     }
-
-    const repoIssues = await scanRepoForSecrets(repo);
-    if (repoIssues.length > 0) {
-      issues.push(...repoIssues.map(i => `${repo.name}: ${i}`));
-    }
-  }
-
-  // HOP repo level: scan integration point where all packages come together
-  console.log('  Scanning HOP repo integration point...');
-  const hopIssues = await scanHopIntegration(opts.hopRepo);
-  if (hopIssues.length > 0) {
-    issues.push(...hopIssues.map(i => `HOP: ${i}`));
+    // HOP repo level
+    console.log('  Scanning HOP repo integration point...');
+    const hopIssues = await scanHopIntegration(opts.hopRepo);
+    if (hopIssues.length > 0) issues.push(...hopIssues.map(i => `HOP: ${i}`));
   }
 
   const findings = issues.map((i, idx) => ({
@@ -1563,7 +1585,9 @@ async function runPipeline() {
           opts.runCypress = true;
           opts.cypressSpec = null;
         } else if (ci === 2) {
+          opts.securityScope = 'bentoboxds';
           await runSecurityReview(opts);
+          opts.securityScope = null;
         } else if (ci === 3) {
           await runPrivacyReview(opts);
         } else {
