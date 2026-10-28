@@ -1770,8 +1770,12 @@ async function runPipeline() {
     let cypress = null;
     if (opts.runCypress) {
       let inMenu = true;
+      let runCypressNow = true;
       while (inMenu) {
-        cypress = await runCypressE2E(opts);
+        if (runCypressNow) {
+          cypress = await runCypressE2E(opts);
+          runCypressNow = false;
+        }
         if (!opts.interactive) { inMenu = false; break; }
         console.log('\n  Post-run options:');
         console.log('    [1] Test another folder');
@@ -1796,6 +1800,7 @@ async function runPipeline() {
           }
           opts.runCypress = true;
           opts.cypressSpec = null;
+          runCypressNow = true;
         } else if (ci === 2) {
           // Security audit sub-menu
           let secMenu = true;
