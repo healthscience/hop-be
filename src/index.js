@@ -1892,10 +1892,52 @@ async function runPipeline() {
 
     const test = await runOrreryTester(opts);
 
-    // Interactive post-test gate (human-in-the-loop)
+    // Interactive release sub-menu (human-in-the-loop)
     if (opts.interactive) {
       const rl = await prompt('  Proceed to release build? (y/N): ');
-      if (rl.trim().toLowerCase() === 'y') opts.release = true;
+      if (rl.trim().toLowerCase() === 'y') {
+        let relMenu = true;
+        while (relMenu) {
+          console.log('\n  Release options:');
+          console.log('    [1] Transfer bentoboxds to bentoboxds-desktop/src/renderer/');
+          console.log('    [2] Review desktop package.json dependencies');
+          console.log('    [3] Run electron:dev to verify build');
+          console.log('    [4] Transfer hop (hop-ecs) to bentoboxds-desktop/hop');
+          console.log('    [5] Back to start');
+          console.log('    [6] Exit CLI');
+          const rc = await prompt('  Select [6]: ');
+          const rci = parseInt(rc.trim(), 10);
+          const desktopRepo = '/var/www/html/hoprotocol/code/bentoboxds-desktop';
+          if (rci === 1) {
+            try {
+              await runCommand('rsync', ['-a', '--exclude', 'node_modules', '/var/www/html/hoprotocol/code/bentoboxds/', desktopRepo + '/src/renderer/'], process.cwd(), 300000);
+              console.log('  Transfer complete.');
+            } catch (e) { console.log('  Transfer failed:', e.message); }
+          } else if (rci === 2) {
+            try {
+              const b = JSON.parse(await fs.readFile('/var/www/html/hoprotocol/code/bentoboxds/package.json', 'utf8'));
+              const d = JSON.parse(await fs.readFile(desktopRepo + '/package.json', 'utf8'));
+              const missing = Object.keys(b.dependencies || {}).filter(k => !(d.dependencies || {})[k]);
+              console.log('  Missing in desktop:', missing.length ? missing.join(', ') : '(none)');
+            } catch (e) { console.log('  Review failed:', e.message); }
+          } else if (rci === 3) {
+            try {
+              await runCommand('npm', ['run', 'electron:dev'], desktopRepo, 300000);
+              console.log('  Electron dev OK.');
+            } catch (e) { console.log('  Electron dev failed:', e.message); }
+          } else if (rci === 4) {
+            try {
+              await runCommand('rsync', ['-a', '--exclude', 'node_modules', opts.hopRepo + '/', desktopRepo + '/hop/'], process.cwd(), 300000);
+              console.log('  Transfer complete.');
+            } catch (e) { console.log('  Transfer failed:', e.message); }
+          } else if (rci === 5) {
+            opts._restartInteractive = true;
+            relMenu = false;
+          } else {
+            process.exit(0);
+          }
+        }
+      }
     }
 
     const feedback = await collectHumanFeedback(opts, test);
