@@ -1272,6 +1272,95 @@ async function runPrivacyReview(opts) {
   return { status: 'PASS' };
 }
 
+async function runModelSecurityAudit(opts, channel) {
+  console.log(`=== Security Audit via ${channel} ===\n`);
+  const cfgPath = path.join(opts.testRepo, '.kilo', 'security-apis.json');
+  let cfg = { apis: [], mcpUrls: [] };
+  try { cfg = JSON.parse(await fs.readFile(cfgPath, 'utf8')); } catch {}
+  const api = cfg.apis.find(a => a.name === channel);
+  if (!api) { console.log(`  No config for ${channel}.`); return { status: 'SKIPPED' }; }
+  const apiKey = process.env[api.apiKeyEnv];
+  if (!apiKey) { console.log(`  Missing env ${api.apiKeyEnv}. Skipping.`); return { status: 'SKIPPED' }; }
+
+  // Build remit
+  let remit = 'You are a security auditor. Review the following code for vulnerabilities (XSS, injection, secret leakage, insecure transport, PII exposure). Return JSON array of findings with fields: id, severity, file, line, title, description, recommendation.\n\n';
+  remit += `Scope: BentoBoxDS selected folder (${opts._cypressFolder || 'all'}), src/, HOP websocket server.\n\n`;
+  // Include selected folder specs + src + hop index.js (truncated)
+  const bentoboxRepo = opts.bentoboxRepo;
+  const files = [];
+  try {
+    const entries = await fs.readdir(bentoboxRepo, { recursive: true });
+    for (const e of entries) {
+      if (typeof e !== 'string' || (!e.endsWith('.js') && !e.endsWith('.cy.js')) || e.includes('node_modules')) continue;
+      if (opts._cypressFolder && opts._cypressFolder !== '(root)' && !e.includes(opts._cypressFolder) && !e.startsWith('src')) continue;
+      files.push(e);
+    }
+  } catch {}
+  for (const f of files.slice(0, 20)) {
+    try {
+      const c = await fs.readFile(path.join(bentoboxRepo, f), 'utf8');
+      remit += `--- ${f} ---\n${c.slice(0, 4000)}\n`;
+    } catch {}
+  }
+  try {
+    const hopC = await fs.readFile(path.join(opts.hopRepo, 'src', 'index.js'), 'utf8');
+    remit += `--- hop/src/index.js (websocket) ---\n${hopC.slice(0, 4000)}\n`;
+  } catch {}
+
+  // Call API
+  let findings = [];
+  try {
+    if (channel === 'openai') {
+      const res = await fetch(`${api.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: api.model, messages: [{ role: 'user', content: remit }], temperature: 0.2 }),
+      });
+      const data = await res.json();
+      const text = data?.choices?.[0]?.message?.content || '[]';
+      const m = text.match(/\[[\s\S]*\]/);
+      findings = m ? JSON.parse(m[0]) : [];
+    } else if (channel === 'claude') {
+      const res = await fetch(`${api.baseUrl}/messages`, {
+        method: 'POST',
+        headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' },
+        body: JSON.stringify({ model: api.model, max_tokens: 4096, messages: [{ role: 'user', content: remit }] }),
+      });
+      const data = await res.json();
+      const text = data?.content?.[0]?.text || '[]';
+      const m = text.match(/\[[\s\S]*\]/);
+      findings = m ? JSON.parse(m[0]) : [];
+    }
+  } catch (e) {
+    console.log(`  ${channel} audit failed: ${e.message}`);
+  }
+
+  // Normalize + merge into security-audit.json
+  const normalized = findings.map((f, idx) => ({
+    id: `${channel.toUpperCase()}-${idx + 1}`,
+    severity: f.severity || 'medium',
+    file: f.file || '',
+    line: f.line || 0,
+    title: f.title || 'Finding',
+    description: f.description || '',
+    recommendation: f.recommendation || '',
+    approved: false,
+    status: 'open',
+    source: channel,
+  }));
+
+  const auditPath = path.join(opts.testRepo, 'artifacts', 'security-audit.json');
+  let existing = { findings: [], summary: {}, veto: false };
+  try { existing = JSON.parse(await fs.readFile(auditPath, 'utf8')); } catch {}
+  const merged = [...(existing.findings || []), ...normalized];
+  await fs.mkdir(path.join(opts.testRepo, 'artifacts'), { recursive: true });
+  await fs.writeFile(auditPath, JSON.stringify({ findings: merged, summary: { total: merged.length }, veto: merged.some(f => f.severity === 'critical'), timestamp: new Date().toISOString() }, null, 2));
+
+  console.log(`  ${channel}: ${normalized.length} findings. Total: ${merged.length}.`);
+  normalized.forEach(f => console.log(`    [${f.id}] (${f.severity}) ${f.title}`));
+  return { status: 'PASS', findings: normalized };
+}
+
 async function scanRepoForSecrets(repo) {
   const issues = [];
   const patterns = [
@@ -1563,7 +1652,7 @@ async function runPipeline() {
         if (!opts.interactive) { inMenu = false; break; }
         console.log('\n  Post-run options:');
         console.log('    [1] Test another folder');
-        console.log('    [2] Perform security audit');
+        console.log('    [2] Security audit menu');
         console.log('    [3] Perform privacy audit');
         console.log('    [4] Back to BentoBoxDS folder menu');
         console.log('    [0] Exit');
@@ -1585,9 +1674,37 @@ async function runPipeline() {
           opts.runCypress = true;
           opts.cypressSpec = null;
         } else if (ci === 2) {
-          opts.securityScope = 'bentoboxds';
-          await runSecurityReview(opts);
-          opts.securityScope = null;
+          // Security audit sub-menu
+          console.log('\n  Security audit options:');
+          console.log('    [1] Beebee self security agent');
+          console.log('    [2] OpenAI model');
+          console.log('    [3] Claude model');
+          console.log('    [4] MCP add url');
+          console.log('    [5] Back to start');
+          const sc = await prompt('  Select [5]: ');
+          const sci = parseInt(sc.trim(), 10);
+          if (sci === 1) {
+            opts.securityScope = 'bentoboxds';
+            await runSecurityReview(opts);
+            opts.securityScope = null;
+          } else if (sci === 2 || sci === 3) {
+            const channel = sci === 2 ? 'openai' : 'claude';
+            await runModelSecurityAudit(opts, channel);
+          } else if (sci === 4) {
+            const url = await prompt('  MCP URL: ');
+            if (url.trim()) {
+              const cfgPath = path.join(opts.testRepo, '.kilo', 'security-apis.json');
+              try {
+                const cfg = JSON.parse(await fs.readFile(cfgPath, 'utf8'));
+                cfg.mcpUrls = cfg.mcpUrls || [];
+                cfg.mcpUrls.push(url.trim());
+                await fs.writeFile(cfgPath, JSON.stringify(cfg, null, 2));
+                console.log('  MCP URL added.');
+              } catch (e) { console.log('  Failed to save MCP URL:', e.message); }
+            }
+          } else {
+            // back
+          }
         } else if (ci === 3) {
           await runPrivacyReview(opts);
         } else {

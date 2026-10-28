@@ -1,0 +1,7 @@
+{
+  "apis": [
+    { "name": "openai", "model": "gpt-4o-mini", "baseUrl": "https://api.openai.com/v1", "apiKeyEnv": "OPENAI_API_KEY" },
+    { "name": "claude", "model": "claude-3-5-sonnet-20241022", "baseUrl": "https://api.anthropic.com/v1", "apiKeyEnv": "ANTHROPIC_API_KEY" }
+  ],
+  "mcpUrls": []
+}
