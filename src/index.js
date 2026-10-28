@@ -1272,6 +1272,24 @@ async function runPrivacyReview(opts) {
   return { status: 'PASS' };
 }
 
+async function viewSecurityReport(opts) {
+  const auditPath = path.join(opts.testRepo, 'artifacts', 'security-audit.json');
+  let data = { findings: [] };
+  try { data = JSON.parse(await fs.readFile(auditPath, 'utf8')); } catch {}
+  console.log('\n=== Security Audit Report ===');
+  if (!data.findings || data.findings.length === 0) {
+    console.log('  No findings.');
+    return;
+  }
+  data.findings.forEach(f => {
+    console.log(`  [${f.id}] (${f.severity}) ${f.title}`);
+    if (f.file) console.log(`      ${f.file}:${f.line}`);
+    if (f.description) console.log(`      ${f.description}`);
+    if (f.recommendation) console.log(`      -> ${f.recommendation}`);
+  });
+  console.log(`  Total: ${data.findings.length}\n`);
+}
+
 async function runModelSecurityAudit(opts, channel) {
   console.log(`=== Security Audit via ${channel} ===\n`);
   const cfgPath = path.join(opts.testRepo, '.kilo', 'security-apis.json');
@@ -1677,35 +1695,44 @@ async function runPipeline() {
           opts.cypressSpec = null;
         } else if (ci === 2) {
           // Security audit sub-menu
-          console.log('\n  Security audit options:');
-          console.log('    [1] Beebee self security agent');
-          console.log('    [2] OpenAI model');
-          console.log('    [3] Claude model');
-          console.log('    [4] Other (MCP add url)');
-          console.log('    [5] Back to start');
-          const sc = await prompt('  Select [5]: ');
-          const sci = parseInt(sc.trim(), 10);
-          if (sci === 1) {
-            opts.securityScope = 'bentoboxds';
-            await runSecurityReview(opts);
-            opts.securityScope = null;
-          } else if (sci === 2 || sci === 3) {
-            const channel = sci === 2 ? 'openai' : 'claude';
-            await runModelSecurityAudit(opts, channel);
-          } else if (sci === 4) {
-            const url = await prompt('  MCP URL: ');
-            if (url.trim()) {
-              const cfgPath = path.join(opts.testRepo, '.kilo', 'security-apis.json');
-              try {
-                const cfg = JSON.parse(await fs.readFile(cfgPath, 'utf8'));
-                cfg.mcpUrls = cfg.mcpUrls || [];
-                cfg.mcpUrls.push(url.trim());
-                await fs.writeFile(cfgPath, JSON.stringify(cfg, null, 2));
-                console.log('  MCP URL added.');
-              } catch (e) { console.log('  Failed to save MCP URL:', e.message); }
+          let secMenu = true;
+          while (secMenu) {
+            console.log('\n  Security audit options:');
+            console.log('    [1] Beebee self security agent');
+            console.log('    [2] OpenAI model');
+            console.log('    [3] Claude model');
+            console.log('    [4] Other (MCP add url)');
+            console.log('    [5] Back to start');
+            const sc = await prompt('  Select [5]: ');
+            const sci = parseInt(sc.trim(), 10);
+            if (sci === 1) {
+              opts.securityScope = 'bentoboxds';
+              await runSecurityReview(opts);
+              opts.securityScope = null;
+              await viewSecurityReport(opts);
+              const pc = await prompt('  [1] View report  [2] Back to security menu: ');
+              if (pc.trim() === '1') await viewSecurityReport(opts);
+            } else if (sci === 2 || sci === 3) {
+              const channel = sci === 2 ? 'openai' : 'claude';
+              await runModelSecurityAudit(opts, channel);
+              await viewSecurityReport(opts);
+              const pc = await prompt('  [1] View report  [2] Back to security menu: ');
+              if (pc.trim() === '1') await viewSecurityReport(opts);
+            } else if (sci === 4) {
+              const url = await prompt('  MCP URL: ');
+              if (url.trim()) {
+                const cfgPath = path.join(opts.testRepo, '.kilo', 'security-apis.json');
+                try {
+                  const cfg = JSON.parse(await fs.readFile(cfgPath, 'utf8'));
+                  cfg.mcpUrls = cfg.mcpUrls || [];
+                  cfg.mcpUrls.push(url.trim());
+                  await fs.writeFile(cfgPath, JSON.stringify(cfg, null, 2));
+                  console.log('  MCP URL added.');
+                } catch (e) { console.log('  Failed to save MCP URL:', e.message); }
+              }
+            } else {
+              secMenu = false;
             }
-          } else {
-            // back
           }
         } else if (ci === 3) {
           await runPrivacyReview(opts);
