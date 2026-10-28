@@ -1,7 +1,7 @@
 {
-  "testResult": "FAIL",
-  "testTarget": "/var/www/html/hoprotocol/code/holepunch-hop/test/setup",
-  "timestamp": "2026-10-28T09:55:26.496Z",
-  "skipped": true,
-  "reason": "Non-interactive mode"
+  "testResult": "PASS",
+  "testTarget": "/var/www/html/hoprotocol/code/kiloagents/hop-be/test/smoke.test.js",
+  "timestamp": "2026-10-28T11:29:56.385Z",
+  "raw": "end",
+  "observations": "end"
 }

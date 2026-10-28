@@ -520,5 +520,113 @@
     "status": "FAIL",
     "detail": "Process exited with non-zero code: 1",
     "timestamp": "2026-10-28T09:55:23.485Z"
+  },
+  {
+    "name": "cypress/e2e/account/accept-peer-invite.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:08:08.246Z"
+  },
+  {
+    "name": "cypress/e2e/account/account-tabs.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:08:38.223Z"
+  },
+  {
+    "name": "cypress/e2e/account/generate-Invite.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:09:08.135Z"
+  },
+  {
+    "name": "cypress/e2e/account/listen-peer-accept.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:09:19.244Z"
+  },
+  {
+    "name": "cypress/e2e/account/accept-peer-invite.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:17:39.108Z"
+  },
+  {
+    "name": "cypress/e2e/account/account-tabs.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:18:05.134Z"
+  },
+  {
+    "name": "cypress/e2e/account/generate-Invite.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:18:31.120Z"
+  },
+  {
+    "name": "cypress/e2e/account/listen-peer-accept.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:18:41.145Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "PASS",
+    "detail": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/account/accept-peer-invite.cy.js",
+    "timestamp": "2026-10-28T11:18:41.317Z"
+  },
+  {
+    "name": "cypress/e2e/interplay/bottom-panel.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:19:43.521Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "PASS",
+    "detail": "full-suite",
+    "timestamp": "2026-10-28T11:19:43.539Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/kiloagents/hop-be/test/smoke.test.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:29:39.186Z"
+  },
+  {
+    "name": "cypress/e2e/connect/signIn.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T11:30:53.501Z"
+  },
+  {
+    "name": "cypress/e2e/account/accept-peer-invite.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T12:53:14.213Z"
+  },
+  {
+    "name": "cypress/e2e/account/account-tabs.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T12:53:38.806Z"
+  },
+  {
+    "name": "cypress/e2e/account/generate-Invite.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T12:54:04.489Z"
+  },
+  {
+    "name": "cypress/e2e/account/listen-peer-accept.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T12:54:14.744Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "PASS",
+    "detail": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/account/accept-peer-invite.cy.js",
+    "timestamp": "2026-10-28T12:54:14.840Z"
   }
 ]

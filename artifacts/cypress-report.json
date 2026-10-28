@@ -1,80 +1,24 @@
 {
-  "status": "FAIL",
-  "spec": "full-suite",
-  "totalSpecs": 46,
+  "status": "PASS",
+  "spec": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/account/accept-peer-invite.cy.js",
+  "totalSpecs": 4,
   "perSpec": [
     {
-      "spec": "account/accept-peer-invite.cy.js                                                 │",
+      "spec": "cypress/e2e/account/accept-peer-invite.cy.js",
       "status": "PASS"
     },
     {
-      "spec": "account/account-tabs.cy.js                                                       │",
+      "spec": "cypress/e2e/account/account-tabs.cy.js",
       "status": "PASS"
     },
     {
-      "spec": "account/generate-Invite.cy.js                                                    │",
+      "spec": "cypress/e2e/account/generate-Invite.cy.js",
       "status": "PASS"
     },
     {
-      "spec": "account/listen-peer-accept.cy.js                                                 │",
-      "status": "PASS"
-    },
-    {
-      "spec": "baseLayout/baseLayout-no-hop.cy.js                                               │",
-      "status": "PASS"
-    },
-    {
-      "spec": "baseLayout/baseLayout.cy.js                                                      │",
-      "status": "PASS"
-    },
-    {
-      "spec": "bbnexus/button-location-bbnexus.cy.js                                            │",
-      "status": "PASS"
-    },
-    {
-      "spec": "bbnexus/interplay-bbnexus.cy.js                                                  │",
-      "status": "PASS"
-    },
-    {
-      "spec": "bentobox/bentoboxBase.cy.js                                                      │",
-      "status": "PASS"
-    },
-    {
-      "spec": "bentobox/chartCsv-large.cy.js                                                    │",
-      "status": "PASS"
-    },
-    {
-      "spec": "bentobox/chartCsv-small.cy.js                                                    │",
-      "status": "PASS"
-    },
-    {
-      "spec": "bentobox/chartNumbers.cy.js                                                      │",
-      "status": "PASS"
-    },
-    {
-      "spec": "chat/basicChat.cy.js                                                             │",
-      "status": "PASS"
-    },
-    {
-      "spec": "chat/chartBuilding.cy.js                                                         │",
-      "status": "PASS"
-    },
-    {
-      "spec": "chat/contextSwitching.cy.js                                                      │",
-      "status": "PASS"
-    },
-    {
-      "spec": "chat/spaceChatSave.cy.js                                                         │",
-      "status": "PASS"
-    },
-    {
-      "spec": "chat/toolCommands.cy.js                                                          │",
-      "status": "PASS"
-    },
-    {
-      "spec": "connect/signIn.cy.js                                                             │",
+      "spec": "cypress/e2e/account/listen-peer-accept.cy.js",
       "status": "PASS"
     }
   ],
-  "timestamp": "2026-10-27T16:13:25.740Z"
+  "timestamp": "2026-10-28T12:54:14.748Z"
 }
