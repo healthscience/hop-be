@@ -1300,102 +1300,93 @@ async function runDesktopRelease(opts) {
 async function interactiveSetup(opts) {
   console.log('=== HOPkilo Interactive Mode ===\n');
 
+  // Step 1 — Entry point selection
+  console.log('  Select entry point:');
+  console.log('    [1] BentoBoxDS  (peer experience, Cypress E2E)');
+  console.log('    [2] hop-ecs     (protocol modules, vitest)');
+  console.log('    [3] Both       (default, recommended; coupled via websocket v1)\n');
+  const ep = await prompt('  Entry point [3]: ');
+  const epIdx = parseInt(ep.trim(), 10);
+  if (epIdx === 1) opts.entryPoint = 'bentoboxds';
+  else if (epIdx === 2) opts.entryPoint = 'hop';
+  else opts.entryPoint = 'both';
+  console.log(`  Entry point: ${opts.entryPoint}\n`);
+
   const repoAnswer = await prompt(`  HOP repo path [default: ${opts.hopRepo}]: `);
-  if (repoAnswer.trim()) {
-    opts.hopRepo = path.resolve(repoAnswer.trim());
-  }
+  if (repoAnswer.trim()) opts.hopRepo = path.resolve(repoAnswer.trim());
   console.log(`  Using HOP repo: ${opts.hopRepo}\n`);
 
   // Discover HOP vitest tests
   console.log('  Discovering HOP protocol tests (vitest)...');
   let hopTests = [];
-  try {
-    hopTests = await discoverTests(opts.hopRepo);
-  } catch {
-    console.log('  No vitest tests found in HOP repo.\n');
-  }
+  try { hopTests = await discoverTests(opts.hopRepo); }
+  catch { console.log('  No vitest tests found in HOP repo.\n'); }
 
   // Discover Cypress E2E specs
   console.log('  Discovering BentoBoxDS E2E specs (Cypress)...');
   let cypressSpecs = [];
-  try {
-    cypressSpecs = await discoverCypressSpecs(opts.bentoboxRepo);
-  } catch {
-    console.log('  No Cypress specs found in BentoBoxDS repo.\n');
-  }
+  try { cypressSpecs = await discoverCypressSpecs(opts.bentoboxRepo); }
+  catch { console.log('  No Cypress specs found in BentoBoxDS repo.\n'); }
 
-  // Select HOP vitest test
-  if (hopTests.length > 0) {
-    console.log('  Available HOP protocol tests:');
-    hopTests.forEach((t, i) => {
-      const rel = path.relative(opts.hopRepo, t);
-      console.log(`    [${i + 1}] ${rel}`);
-    });
-    console.log(`    [${hopTests.length + 1}] Enter custom path\n`);
-
-    const choice = await prompt('  Select HOP test number (or Enter for smoke test): ');
-    const idx = parseInt(choice, 10);
-
-    let selectedHopTest = null;
-    if (idx > 0 && idx <= hopTests.length) {
-      selectedHopTest = hopTests[idx - 1];
-      opts.testPath = selectedHopTest;
-    } else if (idx === hopTests.length + 1) {
-      const customPath = await prompt('  Enter test file path: ');
-      opts.testPath = path.resolve(customPath.trim());
-    } else {
-      opts.testPath = path.join(opts.testRepo, 'test', 'smoke.test.js');
-    }
-    console.log(`  Selected HOP test: ${opts.testPath}\n`);
-
-    // Suggest matching Cypress spec based on HOP test
-    if (selectedHopTest && cypressSpecs.length > 0) {
-      const recommended = recommendCypressSpec(selectedHopTest, cypressSpecs);
-      if (recommended) {
-        console.log(`  💡 Recommended Cypress E2E: ${recommended.relPath} (${recommended.reason})`);
+  // Step 2 — BentoBoxDS branch
+  if (opts.entryPoint === 'bentoboxds' || opts.entryPoint === 'both') {
+    if (cypressSpecs.length > 0) {
+      console.log('  BentoBoxDS test selection:');
+      console.log('    [A] Full suite (all specs)  (default)');
+      console.log('    [B] Pick folder(s)');
+      console.log('    [C] Pick individual spec\n');
+      const sel = (await prompt('  Select [A]: ')).trim().toLowerCase();
+      if (sel === 'b') {
+        const folders = [...new Set(cypressSpecs.map(s => s.relPath.split('/')[0]))];
+        folders.forEach((f, i) => console.log(`    [${i + 1}] ${f}`));
+        const fc = await prompt('  Folder numbers (comma): ');
+        const idxs = fc.split(',').map(x => parseInt(x.trim(), 10)).filter(n => n > 0 && n <= folders.length);
+        const chosenFolders = idxs.map(n => folders[n - 1]);
+        const filtered = cypressSpecs.filter(s => chosenFolders.some(f => s.relPath.startsWith(f)));
+        if (filtered.length) opts.cypressSpec = filtered[0].path;
+      } else if (sel === 'c') {
+        cypressSpecs.forEach((s, i) => console.log(`    [${i + 1}] ${s.relPath}`));
+        const sc = await prompt('  Spec number: ');
+        const idx = parseInt(sc, 10);
+        if (idx > 0 && idx <= cypressSpecs.length) opts.cypressSpec = cypressSpecs[idx - 1].path;
+      } else {
+        opts.cypressSpec = null; // full suite
       }
+      opts.runCypress = true;
+      console.log(`  Cypress spec: ${opts.cypressSpec || 'full suite'}\n`);
     }
   } else {
-    opts.testPath = path.join(opts.testRepo, 'test', 'smoke.test.js');
-    console.log(`  No HOP tests found. Using smoke test: ${opts.testPath}\n`);
+    opts.runCypress = false;
   }
 
-  // Select Cypress E2E spec
-  if (cypressSpecs.length > 0) {
-    const runCypress = await prompt('  Run Cypress E2E tests too? (y/N): ');
-    if (runCypress.trim().toLowerCase() === 'y') {
-      opts.runCypress = true;
-      console.log('  Available Cypress E2E specs:');
-      cypressSpecs.forEach((s, i) => {
-        const marker = (opts.cypressSpec && s.path === opts.cypressSpec) ? ' ← recommended' : '';
-        console.log(`    [${i + 1}] ${s.relPath}${marker}`);
-      });
-      console.log(`    [${cypressSpecs.length + 1}] Run full suite\n`);
-
-      const specChoice = await prompt('  Select Cypress spec number (or Enter for default/lifestrap): ');
-      const specIdx = parseInt(specChoice, 10);
-
-      if (specIdx > 0 && specIdx <= cypressSpecs.length) {
-        opts.cypressSpec = cypressSpecs[specIdx - 1].path;
-      } else if (specIdx === cypressSpecs.length + 1) {
-        opts.cypressSpec = null; // full suite
+  // Step 3 — hop-ecs branch
+  if (opts.entryPoint === 'hop' || opts.entryPoint === 'both') {
+    if (hopTests.length > 0) {
+      console.log('  HOP test selection:');
+      console.log('    [A] hop-ecs full (all tests)  (default)');
+      console.log('    [B] Pick module/folder\n');
+      const sel = (await prompt('  Select [A]: ')).trim().toLowerCase();
+      if (sel === 'b') {
+        const dirs = [...new Set(hopTests.map(t => path.relative(opts.hopRepo, t).split(path.sep)[0]))];
+        dirs.forEach((d, i) => console.log(`    [${i + 1}] ${d}`));
+        const dc = await prompt('  Folder numbers (comma): ');
+        const idxs = dc.split(',').map(x => parseInt(x.trim(), 10)).filter(n => n > 0 && n <= dirs.length);
+        const chosen = idxs.map(n => dirs[n - 1]);
+        const filtered = hopTests.filter(t => chosen.some(d => path.relative(opts.hopRepo, t).startsWith(d)));
+        if (filtered.length) opts.testPath = filtered[0];
       } else {
-        // Default: find lifestrap test
-        const lifestrap = cypressSpecs.find(s => s.relPath.includes('lifestrap'));
-        opts.cypressSpec = lifestrap ? lifestrap.path : null;
+        opts.testPath = null; // full suite
       }
-      console.log(`  Selected Cypress spec: ${opts.cypressSpec || 'full suite (default: lifestrap)'}\n`);
+      console.log(`  HOP test: ${opts.testPath || 'full suite'}\n`);
+    } else {
+      opts.testPath = path.join(opts.testRepo, 'test', 'smoke.test.js');
+      console.log(`  No HOP tests found. Using smoke test: ${opts.testPath}\n`);
     }
   }
 
   return opts;
 }
 
-/**
- * Recommend a Cypress E2E spec based on the selected HOP protocol test.
- * This is a simple heuristic — in the future the Archivist agent will
- * maintain a formal test-to-spec mapping based on module/feature coverage.
- */
 function recommendCypressSpec(hopTestPath, cypressSpecs) {
   const hopName = path.basename(hopTestPath).toLowerCase();
 
@@ -1472,6 +1463,17 @@ async function runPipeline() {
     }
 
     const test = await runOrreryTester(opts);
+
+    // Interactive post-test gates (human-in-the-loop)
+    if (opts.interactive) {
+      const sr = await prompt('  Run security review now? (y/N): ');
+      if (sr.trim().toLowerCase() === 'y') await runSecurityReview(opts);
+      const pr = await prompt('  Run privacy review now? (y/N): ');
+      if (pr.trim().toLowerCase() === 'y') opts.privacyReview = true;
+      const rl = await prompt('  Proceed to release build? (y/N): ');
+      if (rl.trim().toLowerCase() === 'y') opts.release = true;
+    }
+
     const feedback = await collectHumanFeedback(opts, test);
 
     await runSynthesis(opts, { privacy, test, bentobox, cypress, feedback });
