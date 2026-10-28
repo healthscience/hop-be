@@ -1706,8 +1706,7 @@ async function interactiveSetup(opts) {
       opts.testPath = null; // full suite
     } else if (si - 2 >= 0 && si - 2 < folders.length) {
       const folder = folders[si - 2];
-      const files = await discoverTests(path.join(testDir, folder));
-      opts.testPath = files.length ? files[0] : null;
+      opts.testPath = path.join(testDir, folder);
       opts._hopFolder = folder;
     }
     console.log(`  HOP test: ${opts.testPath || 'full suite'}\n`);
