@@ -525,7 +525,9 @@ async function runOrreryTester(opts) {
 
   if (opts.testPath) {
     testFile = path.resolve(opts.testPath);
-    if (testFile.startsWith(opts.hopRepo)) {
+    if (opts.modulePath && testFile.startsWith(opts.modulePath)) {
+      testCwd = opts.modulePath;
+    } else if (testFile.startsWith(opts.hopRepo)) {
       testCwd = opts.hopRepo;
     } else {
       testCwd = opts.testRepo;
@@ -1667,27 +1669,48 @@ async function interactiveSetup(opts) {
 
   // Step 3 — hop-ecs branch
   if (opts.entryPoint === 'hop' || opts.entryPoint === 'both') {
-    if (hopTests.length > 0) {
-      console.log('  HOP test selection:');
-      console.log('    [A] hop-ecs full (all tests)  (default)');
-      console.log('    [B] Pick module/folder\n');
-      const sel = (await prompt('  Select [A]: ')).trim().toLowerCase();
-      if (sel === 'b') {
-        const dirs = [...new Set(hopTests.map(t => path.relative(opts.hopRepo, t).split(path.sep)[0]))];
-        dirs.forEach((d, i) => console.log(`    [${i + 1}] ${d}`));
-        const dc = await prompt('  Folder numbers (comma): ');
-        const idxs = dc.split(',').map(x => parseInt(x.trim(), 10)).filter(n => n > 0 && n <= dirs.length);
-        const chosen = idxs.map(n => dirs[n - 1]);
-        const filtered = hopTests.filter(t => chosen.some(d => path.relative(opts.hopRepo, t).startsWith(d)));
-        if (filtered.length) opts.testPath = filtered[0];
-      } else {
-        opts.testPath = null; // full suite
-      }
-      console.log(`  HOP test: ${opts.testPath || 'full suite'}\n`);
-    } else {
-      opts.testPath = path.join(opts.testRepo, 'test', 'smoke.test.js');
-      console.log(`  No HOP tests found. Using smoke test: ${opts.testPath}\n`);
+    const HOP_MODULES = [
+      { name: 'hop (hop-ecs)', path: opts.hopRepo },
+      { name: 'bbAI (beebee-ai)', path: '/var/www/html/hoprotocol/code/bbAI' },
+      { name: 'library-hop', path: '/var/www/html/hoprotocol/code/library-hop' },
+      { name: 'librarycomposer', path: '/var/www/html/hoprotocol/code/librarycomposer' },
+      { name: 'holepunch-hop', path: '/var/www/html/hoprotocol/code/holepunch-hop' },
+      { name: 'hop-crypto', path: '/var/www/html/hoprotocol/code/hop-crypto' },
+      { name: 'hop-message', path: '/var/www/html/hoprotocol/code/hop-message' },
+    ];
+    console.log('  Select module:');
+    HOP_MODULES.forEach((m, i) => console.log(`    [${i + 1}] ${m.name}`));
+    console.log('');
+    const mc = await prompt('  Module number [1]: ');
+    const mi = parseInt(mc.trim(), 10);
+    const mod = (mi > 0 && mi <= HOP_MODULES.length) ? HOP_MODULES[mi - 1] : HOP_MODULES[0];
+    opts.hopModule = mod.name;
+    opts.modulePath = mod.path;
+    opts.hopRepo = mod.path;
+    console.log(`  Module: ${mod.name} (${mod.path})\n`);
+
+    // test all vs specific folder
+    const testDir = path.join(mod.path, 'test');
+    let folders = [];
+    try {
+      const entries = await fs.readdir(testDir, { withFileTypes: true });
+      folders = entries.filter(e => e.isDirectory()).map(e => e.name);
+    } catch {}
+    console.log('  Test selection:');
+    console.log('    [1] Test all (full suite)  (default)');
+    folders.forEach((f, i) => console.log(`    [${i + 2}] ${f}`));
+    console.log('');
+    const sc = await prompt('  Select [1]: ');
+    const si = parseInt(sc.trim(), 10);
+    if (si === 1 || isNaN(si) || si < 2) {
+      opts.testPath = null; // full suite
+    } else if (si - 2 >= 0 && si - 2 < folders.length) {
+      const folder = folders[si - 2];
+      const files = await discoverTests(path.join(testDir, folder));
+      opts.testPath = files.length ? files[0] : null;
+      opts._hopFolder = folder;
     }
+    console.log(`  HOP test: ${opts.testPath || 'full suite'}\n`);
   }
 
   return opts;
@@ -1902,6 +1925,94 @@ async function runPipeline() {
     }
 
     const test = await runOrreryTester(opts);
+
+    if (opts.hopModule) {
+      await setRepoStatus(opts.hopModule, test.status === 'PASS' ? 'pass' : 'fail', test.status);
+      await recordTestRun(opts.hopModule, test.status === 'PASS' ? 'PASS' : 'FAIL');
+    }
+
+    // Interactive hop post-run menu (human-in-the-loop)
+    if (opts.interactive && opts.hopModule && !opts.runCypress) {
+      let hopMenu = true;
+      while (hopMenu) {
+        console.log('\n  Hop post-run options:');
+        console.log('    [1] Security audit');
+        console.log('    [2] Privacy audit');
+        console.log('    [3] Back to start (restart flow)');
+        console.log('    [0] Continue');
+        const hc = await prompt('  Select [0]: ');
+        const hci = parseInt(hc.trim(), 10);
+        if (hci === 1) {
+          let secMenu = true;
+          while (secMenu) {
+            console.log('\n  Security audit options:');
+            console.log('    [1] Beebee self security agent');
+            console.log('    [2] OpenAI model');
+            console.log('    [3] Claude model');
+            console.log('    [4] Other (MCP add url)');
+            console.log('    [5] Back to start (restart flow)');
+            console.log('    [6] Security audit over (return to main menu)');
+            const sc = await prompt('  Select [6]: ');
+            const sci = parseInt(sc.trim(), 10);
+            if (sci === 1) {
+              opts.securityScope = 'bentoboxds';
+              await runSecurityReview(opts);
+              opts.securityScope = null;
+              await viewSecurityReport(opts);
+            } else if (sci === 2 || sci === 3) {
+              const channel = sci === 2 ? 'openai' : 'claude';
+              await runModelSecurityAudit(opts, channel);
+              await viewSecurityReport(opts);
+            } else if (sci === 4) {
+              const url = await prompt('  MCP URL: ');
+              if (url.trim()) {
+                const cfgPath = path.join(opts.testRepo, '.kilo', 'security-apis.json');
+                try { const cfg = JSON.parse(await fs.readFile(cfgPath, 'utf8')); cfg.mcpUrls = cfg.mcpUrls || []; cfg.mcpUrls.push(url.trim()); await fs.writeFile(cfgPath, JSON.stringify(cfg, null, 2)); console.log('  MCP URL added.'); } catch (e) { console.log('  Failed:', e.message); }
+              }
+            } else if (sci === 5) {
+              opts._restartInteractive = true; hopMenu = false;
+            } else {
+              secMenu = false;
+            }
+          }
+        } else if (hci === 2) {
+          let privMenu = true;
+          while (privMenu) {
+            console.log('\n  Privacy audit options:');
+            console.log('    [1] Beebee self privacy review');
+            console.log('    [2] OpenAI model');
+            console.log('    [3] Claude model');
+            console.log('    [4] Other (MCP add url)');
+            console.log('    [5] Back to start (restart flow)');
+            console.log('    [6] Privacy audit over (return to main menu)');
+            const pc = await prompt('  Select [6]: ');
+            const pci = parseInt(pc.trim(), 10);
+            if (pci === 1) {
+              await runPrivacyReview(opts);
+              await viewPrivacyReport(opts);
+            } else if (pci === 2 || pci === 3) {
+              const channel = pci === 2 ? 'openai' : 'claude';
+              await runModelPrivacyAudit(opts, channel);
+              await viewPrivacyReport(opts);
+            } else if (pci === 4) {
+              const url = await prompt('  MCP URL: ');
+              if (url.trim()) {
+                const cfgPath = path.join(opts.testRepo, '.kilo', 'security-apis.json');
+                try { const cfg = JSON.parse(await fs.readFile(cfgPath, 'utf8')); cfg.mcpUrls = cfg.mcpUrls || []; cfg.mcpUrls.push(url.trim()); await fs.writeFile(cfgPath, JSON.stringify(cfg, null, 2)); console.log('  MCP URL added.'); } catch (e) { console.log('  Failed:', e.message); }
+              }
+            } else if (pci === 5) {
+              opts._restartInteractive = true; privMenu = false; hopMenu = false;
+            } else {
+              privMenu = false;
+            }
+          }
+        } else if (hci === 3) {
+          opts._restartInteractive = true; hopMenu = false;
+        } else {
+          hopMenu = false;
+        }
+      }
+    }
 
     // Interactive release sub-menu (human-in-the-loop)
     if (opts.interactive) {
