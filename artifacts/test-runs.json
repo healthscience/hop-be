@@ -1,0 +1,524 @@
+[
+  {
+    "name": "bentoboxds-e2e",
+    "status": "FAIL",
+    "detail": "Process timed out after 300000ms",
+    "timestamp": "2026-10-24T15:13:26.067Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "FAIL",
+    "detail": "full-suite",
+    "timestamp": "2026-10-24T15:33:32.502Z"
+  },
+  {
+    "name": "hop",
+    "status": "FAIL",
+    "detail": "Process timed out after 120000ms",
+    "timestamp": "2026-10-24T15:44:28.928Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "FAIL",
+    "detail": "full-suite",
+    "timestamp": "2026-10-27T13:28:39.308Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "FAIL",
+    "detail": "full-suite",
+    "timestamp": "2026-10-27T13:42:42.746Z"
+  },
+  {
+    "name": "account/accept-peer-invite.cy.js                                                 │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.721Z"
+  },
+  {
+    "name": "account/account-tabs.cy.js                                                       │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.724Z"
+  },
+  {
+    "name": "account/generate-Invite.cy.js                                                    │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.725Z"
+  },
+  {
+    "name": "account/listen-peer-accept.cy.js                                                 │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.726Z"
+  },
+  {
+    "name": "baseLayout/baseLayout-no-hop.cy.js                                               │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.727Z"
+  },
+  {
+    "name": "baseLayout/baseLayout.cy.js                                                      │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.728Z"
+  },
+  {
+    "name": "bbnexus/button-location-bbnexus.cy.js                                            │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.729Z"
+  },
+  {
+    "name": "bbnexus/interplay-bbnexus.cy.js                                                  │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.730Z"
+  },
+  {
+    "name": "bentobox/bentoboxBase.cy.js                                                      │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.730Z"
+  },
+  {
+    "name": "bentobox/chartCsv-large.cy.js                                                    │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.731Z"
+  },
+  {
+    "name": "bentobox/chartCsv-small.cy.js                                                    │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.732Z"
+  },
+  {
+    "name": "bentobox/chartNumbers.cy.js                                                      │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.733Z"
+  },
+  {
+    "name": "chat/basicChat.cy.js                                                             │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.733Z"
+  },
+  {
+    "name": "chat/chartBuilding.cy.js                                                         │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.734Z"
+  },
+  {
+    "name": "chat/contextSwitching.cy.js                                                      │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.737Z"
+  },
+  {
+    "name": "chat/spaceChatSave.cy.js                                                         │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.738Z"
+  },
+  {
+    "name": "chat/toolCommands.cy.js                                                          │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.739Z"
+  },
+  {
+    "name": "connect/signIn.cy.js                                                             │",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:13:25.739Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "FAIL",
+    "detail": "full-suite",
+    "timestamp": "2026-10-27T16:13:25.753Z"
+  },
+  {
+    "name": "cypress/e2e/account/accept-peer-invite.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:17:35.949Z"
+  },
+  {
+    "name": "cypress/e2e/account/account-tabs.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:17:50.232Z"
+  },
+  {
+    "name": "cypress/e2e/account/generate-Invite.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:18:12.322Z"
+  },
+  {
+    "name": "cypress/e2e/account/listen-peer-accept.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:18:24.088Z"
+  },
+  {
+    "name": "cypress/e2e/account/accept-peer-invite.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:18:44.163Z"
+  },
+  {
+    "name": "cypress/e2e/agentTools/body/body-open-menu.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:18:46.988Z"
+  },
+  {
+    "name": "cypress/e2e/agentTools/chat/beebeechat/hello-beebee.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:19:05.372Z"
+  },
+  {
+    "name": "cypress/e2e/account/account-tabs.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:19:05.471Z"
+  },
+  {
+    "name": "cypress/e2e/account/generate-Invite.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:19:34.949Z"
+  },
+  {
+    "name": "cypress/e2e/account/accept-peer-invite.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:19:46.304Z"
+  },
+  {
+    "name": "cypress/e2e/account/listen-peer-accept.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:19:51.369Z"
+  },
+  {
+    "name": "cypress/e2e/account/account-tabs.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:20:07.817Z"
+  },
+  {
+    "name": "cypress/e2e/agentTools/body/body-open-menu.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:20:14.280Z"
+  },
+  {
+    "name": "cypress/e2e/agentTools/chat/beebeechat/hello-beebee.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:20:34.220Z"
+  },
+  {
+    "name": "cypress/e2e/account/generate-Invite.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:20:37.359Z"
+  },
+  {
+    "name": "cypress/e2e/agentTools/chat/beebeechat/upload-beebee.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:20:53.098Z"
+  },
+  {
+    "name": "cypress/e2e/account/listen-peer-accept.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:20:53.446Z"
+  },
+  {
+    "name": "cypress/e2e/agentTools/library/library-open-menu.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:21:08.935Z"
+  },
+  {
+    "name": "cypress/e2e/agentTools/body/body-open-menu.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:21:12.679Z"
+  },
+  {
+    "name": "cypress/e2e/agentTools/chat/beebeechat/hello-beebee.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:21:22.165Z"
+  },
+  {
+    "name": "cypress/e2e/agentTools/chat/beebeechat/upload-beebee.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:21:23.277Z"
+  },
+  {
+    "name": "cypress/e2e/agentTools/spaces/space-sub-menu.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:21:28.648Z"
+  },
+  {
+    "name": "cypress/e2e/baseLayout/baseLayout-no-hop.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:21:53.275Z"
+  },
+  {
+    "name": "cypress/e2e/baseLayout/baseLayout.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:22:11.804Z"
+  },
+  {
+    "name": "cypress/e2e/account/accept-peer-invite.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:22:18.451Z"
+  },
+  {
+    "name": "cypress/e2e/baseLayout/mainNav/toolbarNavLayout.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:22:29.744Z"
+  },
+  {
+    "name": "cypress/e2e/baseLayout/welcomeBeebee/browserWelcome.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:22:54.055Z"
+  },
+  {
+    "name": "cypress/e2e/bbnexus/button-location-bbnexus.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:23:15.831Z"
+  },
+  {
+    "name": "cypress/e2e/bbnexus/interplay-bbnexus.cy.js",
+    "status": "FAIL",
+    "detail": "",
+    "timestamp": "2026-10-27T16:23:32.093Z"
+  },
+  {
+    "name": "cypress/e2e/account/accept-peer-invite.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:28:30.158Z"
+  },
+  {
+    "name": "cypress/e2e/account/account-tabs.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-27T16:28:55.693Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/hop/test/osmosis",
+    "status": "FAIL",
+    "detail": "Process timed out after 180000ms",
+    "timestamp": "2026-10-27T16:40:24.651Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/hop/test/osmosis/p1-p2-p3-two-lib-replicatoin.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:40:13.393Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/hop/test/osmosis/p1-p2-two-lib-replication.test.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T09:40:27.937Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/hop/test/osmosis/p1-p3-idenpotent-two-lib.test.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T09:40:59.289Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/hop/test/osmosis/peer1-peer2-seed-replication.test.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T09:41:13.770Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/hop/test/osmosis/peer1-to-peer2-reconnect.test.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T09:41:37.122Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/hop/test/osmosis/p1-p2-p3-two-lib-replicatoin.test.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T09:42:25.994Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/bbAI/test/skills/400IMmapper.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:43:05.099Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/bbAI/test/skills/RDFmapper.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:43:08.899Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/bbAI/test/skills/routing.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:43:12.707Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/datacommands/files/large-csv.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:46:25.679Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/datacommands/files/small-csv.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:46:29.481Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/datacommands/ledger/save-get-ledger.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:46:33.284Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/datacommands/results/save-get-results.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:46:37.101Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/holepunch-initiate.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:46:40.902Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/large-csv.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:46:44.696Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/multipers/ten-peers-network.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:46:48.496Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/peers/peer-invite.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:46:52.287Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/setup-bee-holepunch.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:46:56.075Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/setup-holepunch.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:46:59.869Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/threepers/peer3-geninvite-after.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:47:03.673Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/threepers/three-peers.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:47:07.472Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/threepers/two-then-three.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:47:11.257Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/twopeers/peerClient-Server.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:47:15.058Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/twopeers/reconnect-peers.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:47:18.862Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/twopeers/reconnect-serverthen-conerr.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:47:22.664Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/twopeers/reconnect-then-conerr.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:47:26.469Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/twopeers/two-peer-one-disconnect.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:47:30.346Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/twopeers/two-peer-server-disconnect.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:47:34.143Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/setup/holepunch-initiate.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:55:15.897Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/setup/setup-bee-holepunch.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:55:19.690Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/holepunch-hop/test/setup/setup-holepunch.test.js",
+    "status": "FAIL",
+    "detail": "Process exited with non-zero code: 1",
+    "timestamp": "2026-10-28T09:55:23.485Z"
+  }
+]

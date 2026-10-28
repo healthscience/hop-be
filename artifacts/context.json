@@ -1,0 +1,27 @@
+{
+  "modules": [
+    {
+      "file": "01-story-genesis.md",
+      "size": 1822,
+      "lines": 28
+    },
+    {
+      "file": "02-interplay-sync.md",
+      "size": 1602,
+      "lines": 33
+    },
+    {
+      "file": "03-emulation-criteria.md",
+      "size": 2040,
+      "lines": 44
+    }
+  ],
+  "channels": [],
+  "rules": [],
+  "specFiles": [
+    "01-story-genesis.md",
+    "02-interplay-sync.md",
+    "03-emulation-criteria.md"
+  ],
+  "timestamp": "2026-10-28T09:55:15.033Z"
+}

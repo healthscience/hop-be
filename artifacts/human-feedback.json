@@ -1,0 +1,7 @@
+{
+  "testResult": "FAIL",
+  "testTarget": "/var/www/html/hoprotocol/code/holepunch-hop/test/setup",
+  "timestamp": "2026-10-28T09:55:26.496Z",
+  "skipped": true,
+  "reason": "Non-interactive mode"
+}
