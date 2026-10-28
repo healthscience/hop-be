@@ -532,6 +532,9 @@ async function runOrreryTester(opts) {
     } else {
       testCwd = opts.testRepo;
     }
+  } else if (opts.modulePath) {
+    testFile = path.join(opts.modulePath, 'test');
+    testCwd = opts.modulePath;
   } else {
     testFile = path.join(opts.testRepo, 'test', 'smoke.test.js');
     testCwd = opts.testRepo;
