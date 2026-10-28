@@ -1892,12 +1892,8 @@ async function runPipeline() {
 
     const test = await runOrreryTester(opts);
 
-    // Interactive post-test gates (human-in-the-loop)
+    // Interactive post-test gate (human-in-the-loop)
     if (opts.interactive) {
-      const sr = await prompt('  Run security review now? (y/N): ');
-      if (sr.trim().toLowerCase() === 'y') await runSecurityReview(opts);
-      const pr = await prompt('  Run privacy review now? (y/N): ');
-      if (pr.trim().toLowerCase() === 'y') opts.privacyReview = true;
       const rl = await prompt('  Proceed to release build? (y/N): ');
       if (rl.trim().toLowerCase() === 'y') opts.release = true;
     }
