@@ -1,7 +1,7 @@
 {
   "name": "hop-be",
   "version": "0.0.1",
-  "description": "improve and test HOP",
+  "description": "Automation of improving, testing, securing and assessing privacy of BentoBoxDS and HOP",
   "keywords": [
     "hop",
     "bentoboxds",
@@ -23,8 +23,8 @@
   "type": "module",
   "main": "src/index.js",
   "scripts": {
-      "start": "node src/index.js -i",
-      "test": "vitest run"
+    "start": "node src/index.js -i",
+    "test": "vitest run"
   },
   "devDependencies": {
     "vitest": "^5.0.4"

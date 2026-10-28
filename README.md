@@ -1,2 +1,2 @@
 # hop-be
-Automation of improving and testing BentoBoxDS  HOP
+Automation of improving, testing, securing and assessing privacy of BentoBoxDS and HOP
