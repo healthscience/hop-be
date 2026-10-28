@@ -34,6 +34,7 @@ function parseArgs() {
     status: false,
     testAll: false,
     securityReview: false,
+    privacyReview: false,
     releaseAll: false,
     confirm: false,
     coupling: false,
@@ -103,6 +104,10 @@ function parseArgs() {
         break;
       case '--security-review':
         opts.securityReview = true;
+        break;
+      case '--privacy':
+      case '--privacy-review':
+        opts.privacyReview = true;
         break;
       case '--release-all':
         opts.releaseAll = true;
@@ -1193,6 +1198,41 @@ async function runSecurityReview(opts) {
   return { status: 'PASS' };
 }
 
+/**
+ * Privacy review: scan repos for PII exposure and data-handling risks.
+ */
+async function runPrivacyReview(opts) {
+  console.log('=== Privacy Review ===\n');
+  const issues = [];
+  const piiPatterns = [
+    { regex: /localStorage\.setItem\([^)]*(email|phone|ssn|token|password)/gi, desc: 'PII stored in localStorage' },
+    { regex: /console\.log\([^)]*(email|phone|ssn|token|password)/gi, desc: 'PII logged to console' },
+    { regex: /fetch\([^)]*\+[^)]*(email|phone)/gi, desc: 'PII in URL params' },
+  ];
+  for (const repo of KNOWN_REPOS) {
+    if (repo.type === 'desktop') continue;
+    try { await fs.access(repo.path); } catch { continue; }
+    const entries = await fs.readdir(repo.path, { recursive: true });
+    for (const entry of entries) {
+      if (typeof entry !== 'string' || (!entry.endsWith('.js') && !entry.endsWith('.ts'))) continue;
+      const fullPath = path.join(repo.path, entry);
+      try {
+        const content = await fs.readFile(fullPath, 'utf8');
+        for (const pat of piiPatterns) {
+          if (pat.regex.test(content)) issues.push(`${repo.name}: ${pat.desc} in ${entry}`);
+        }
+      } catch {}
+    }
+  }
+  if (issues.length > 0) {
+    console.log(`  ✗ ${issues.length} privacy issue(s):`);
+    issues.forEach(i => console.log(`    - ${i}`));
+    return { status: 'VETO', issues };
+  }
+  console.log('  ✓ Privacy review CLEAR\n');
+  return { status: 'PASS' };
+}
+
 async function scanRepoForSecrets(repo) {
   const issues = [];
   const patterns = [
@@ -1432,6 +1472,10 @@ async function runPipeline() {
     await runSequentialTesting(opts);
     process.exit(0);
   }
+  if (opts.privacyReview && !opts.testAll && !opts.securityReview && !opts.confirm && !opts.releaseAll && !opts.auto && !opts.status) {
+    await runPrivacyReview(opts);
+    process.exit(0);
+  }
   if (opts.runCypress && !opts.testAll && !opts.securityReview && !opts.confirm && !opts.releaseAll && !opts.auto && !opts.status) {
     await runCypressE2E(opts);
     process.exit(0);
@@ -1474,36 +1518,39 @@ async function runPipeline() {
 
     let cypress = null;
     if (opts.runCypress) {
-      let runAgain = true;
-      while (runAgain) {
+      let inMenu = true;
+      while (inMenu) {
         cypress = await runCypressE2E(opts);
-        if (!opts.interactive) { runAgain = false; break; }
+        if (!opts.interactive) { inMenu = false; break; }
         console.log('\n  Post-run options:');
         console.log('    [1] Test another folder');
         console.log('    [2] Perform security audit');
         console.log('    [3] Perform privacy audit');
-        console.log('    [4] Back to start');
-        const choice = await prompt('  Select [4]: ');
+        console.log('    [4] Back to BentoBoxDS folder menu');
+        console.log('    [0] Exit');
+        const choice = await prompt('  Select [0]: ');
         const ci = parseInt(choice.trim(), 10);
-        if (ci === 1) {
+        if (ci === 1 || ci === 4) {
           const allSpecs = await discoverCypressSpecs(opts.bentoboxRepo);
           const folders = [...new Set(allSpecs.map(s => { const p = s.relPath.split('/'); return p.length >= 4 ? p[2] : '(root)'; }))];
           console.log('  Folders:');
           folders.forEach((f, i) => console.log(`    [${i + 1}] ${f}`));
-          const fc = await prompt('  Folder number: ');
-          const fi = parseInt(fc.trim(), 10);
-          if (fi > 0 && fi <= folders.length) {
-            opts._cypressFolder = folders[fi - 1];
+          const fc = await prompt('  Folder number(s) (comma) or 1 for all: ');
+          const trimmed = fc.trim();
+          if (trimmed === '1' || trimmed === '') {
+            opts._cypressFolder = null;
+          } else {
+            const idxs = trimmed.split(',').map(x => parseInt(x.trim(), 10)).filter(n => n > 0 && n <= folders.length);
+            if (idxs.length) opts._cypressFolder = folders[idxs[0] - 1];
           }
           opts.runCypress = true;
+          opts.cypressSpec = null;
         } else if (ci === 2) {
           await runSecurityReview(opts);
-          runAgain = false;
         } else if (ci === 3) {
-          opts.privacyReview = true;
-          runAgain = false;
+          await runPrivacyReview(opts);
         } else {
-          runAgain = false;
+          inMenu = false;
         }
       }
     }
