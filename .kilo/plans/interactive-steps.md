@@ -34,3 +34,11 @@ After Cypress run:
 - `[4]` Back to BentoBoxDS folder menu
 - `[0]` Exit
 Audits return to menu; `[4]` re-prompts folder selection.
+
+## Security audit sub-menu (BentoBoxDS)
+After selecting security audit:
+- `[1]` self audit (beebee)
+- `[2]` openAI audit
+- `[3]` claude audit
+- `[4]` other (MCP add url)
+- `[5]` back to start

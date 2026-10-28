@@ -1679,7 +1679,7 @@ async function runPipeline() {
           console.log('    [1] Beebee self security agent');
           console.log('    [2] OpenAI model');
           console.log('    [3] Claude model');
-          console.log('    [4] MCP add url');
+          console.log('    [4] Other (MCP add url)');
           console.log('    [5] Back to start');
           const sc = await prompt('  Select [5]: ');
           const sci = parseInt(sc.trim(), 10);
