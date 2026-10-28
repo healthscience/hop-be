@@ -1,24 +1,36 @@
 {
-  "status": "PASS",
-  "spec": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/baseLayout/baseLayout-no-hop.cy.js",
-  "totalSpecs": 4,
+  "status": "FAIL",
+  "spec": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/story/besearch/besearch-fixes.cy.js",
+  "totalSpecs": 7,
   "perSpec": [
     {
-      "spec": "cypress/e2e/baseLayout/baseLayout-no-hop.cy.js",
+      "spec": "cypress/e2e/story/besearch/besearch-fixes.cy.js",
+      "status": "FAIL"
+    },
+    {
+      "spec": "cypress/e2e/story/besearch/besearch-simple.cy.js",
+      "status": "FAIL"
+    },
+    {
+      "spec": "cypress/e2e/story/besearch/besearch.cy.js",
       "status": "PASS"
     },
     {
-      "spec": "cypress/e2e/baseLayout/baseLayout.cy.js",
+      "spec": "cypress/e2e/story/lifestrap/01_lifestrap-story-flow.cy.js",
+      "status": "FAIL"
+    },
+    {
+      "spec": "cypress/e2e/story/lifestrap/02_lifestrap.cy.js",
+      "status": "FAIL"
+    },
+    {
+      "spec": "cypress/e2e/story/lifestrap/03_lifestrap-lens-data.cy.js",
       "status": "PASS"
     },
     {
-      "spec": "cypress/e2e/baseLayout/mainNav/toolbarNavLayout.cy.js",
-      "status": "PASS"
-    },
-    {
-      "spec": "cypress/e2e/baseLayout/welcomeBeebee/browserWelcome.cy.js",
+      "spec": "cypress/e2e/story/story-panel.cy.js",
       "status": "PASS"
     }
   ],
-  "timestamp": "2026-10-28T13:59:05.237Z"
+  "timestamp": "2026-10-28T14:32:01.940Z"
 }

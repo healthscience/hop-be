@@ -5,12 +5,14 @@
     "lastUpdated": "2026-10-24T15:44:28.926Z"
   },
   "hop-crypto": {
-    "status": "not-tested",
-    "reason": "never tested"
+    "status": "pass",
+    "reason": "PASS",
+    "lastUpdated": "2026-10-28T14:25:40.080Z"
   },
   "library-hop": {
-    "status": "not-tested",
-    "reason": "never tested"
+    "status": "pass",
+    "reason": "PASS",
+    "lastUpdated": "2026-10-28T14:24:34.020Z"
   },
   "hop-message": {
     "status": "not-tested",
