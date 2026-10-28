@@ -1188,14 +1188,31 @@ async function runSecurityReview(opts) {
     issues.push(...hopIssues.map(i => `HOP: ${i}`));
   }
 
+  const findings = issues.map((i, idx) => ({
+    id: `SEC-${idx + 1}`,
+    severity: 'medium',
+    file: '',
+    line: 0,
+    title: i,
+    description: i,
+    recommendation: 'Review and remediate the flagged pattern.',
+    approved: false,
+    status: 'open',
+  }));
+  await fs.mkdir(path.join(DEFAULT_TEST_REPO, 'artifacts'), { recursive: true });
+  await fs.writeFile(
+    path.join(DEFAULT_TEST_REPO, 'artifacts', 'security-audit.json'),
+    JSON.stringify({ findings, summary: { total: findings.length, veto: issues.length > 0 }, veto: issues.length > 0, timestamp: new Date().toISOString() }, null, 2)
+  );
+
   if (issues.length > 0) {
     console.log(`  ✗ VETO: ${issues.length} security/privacy issue(s) found:`);
-    issues.forEach(i => console.log(`    - ${i}`));
-    return { status: 'VETO', issues };
+    issues.forEach((i, idx) => console.log(`    [SEC-${idx + 1}] ${i}`));
+    return { status: 'VETO', issues, findings };
   }
 
   console.log('  ✓ Security & privacy review CLEAR\n');
-  return { status: 'PASS' };
+  return { status: 'PASS', findings };
 }
 
 /**
