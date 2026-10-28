@@ -1281,6 +1281,8 @@ async function runModelSecurityAudit(opts, channel) {
   if (!api) { console.log(`  No config for ${channel}.`); return { status: 'SKIPPED' }; }
   const apiKey = process.env[api.apiKeyEnv];
   if (!apiKey) { console.log(`  Missing env ${api.apiKeyEnv}. Skipping.`); return { status: 'SKIPPED' }; }
+  const modelAnswer = await prompt(`  Model [${api.model}]: `);
+  if (modelAnswer.trim()) api.model = modelAnswer.trim();
 
   // Build remit
   let remit = 'You are a security auditor. Review the following code for vulnerabilities (XSS, injection, secret leakage, insecure transport, PII exposure). Return JSON array of findings with fields: id, severity, file, line, title, description, recommendation.\n\n';
