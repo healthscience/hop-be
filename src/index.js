@@ -423,7 +423,13 @@ async function runCypressE2E(opts) {
     return { status: 'SKIPPED', reason: 'bentosd repo not found' };
   }
 
-  const specs = await discoverCypressSpecs(opts.bentoboxRepo);
+  let specs = await discoverCypressSpecs(opts.bentoboxRepo);
+  if (opts._cypressFolder && opts._cypressFolder !== '(root)') {
+    specs = specs.filter(s => {
+      const parts = s.relPath.split('/');
+      return parts.length >= 4 && parts[2] === opts._cypressFolder;
+    });
+  }
   console.log(`[Cypress] Found ${specs.length} E2E spec(s) in BentoBoxDS`);
 
   if (specs.length > 0 && opts.verbose) {
@@ -1337,8 +1343,14 @@ async function interactiveSetup(opts) {
   // Step 2 — BentoBoxDS branch
   if (opts.entryPoint === 'bentoboxds' || opts.entryPoint === 'both') {
     if (cypressSpecs.length > 0) {
-      const folders = [...new Set(cypressSpecs.map(s => s.relPath.split('/')[0]))];
-      console.log('  BentoBoxDS test selection:');
+      const folderOf = (s) => {
+        const parts = s.relPath.split('/');
+        // cypress/e2e/<folder>/...
+        if (parts.length >= 4) return parts[2];
+        return '(root)';
+      };
+      const folders = [...new Set(cypressSpecs.map(folderOf))];
+      console.log('  BentoBoxDS test selection (folders under cypress/e2e):');
       console.log('    [1] Test all (full suite)  (default)');
       folders.forEach((f, i) => console.log(`    [${i + 2}] ${f}`));
       console.log('');
@@ -1348,8 +1360,10 @@ async function interactiveSetup(opts) {
         opts.cypressSpec = null; // full suite
       } else if (idx - 2 >= 0 && idx - 2 < folders.length) {
         const folder = folders[idx - 2];
-        const filtered = cypressSpecs.filter(s => s.relPath.startsWith(folder));
+        const filtered = cypressSpecs.filter(s => folderOf(s) === folder);
         opts.cypressSpec = filtered.length ? filtered[0].path : null;
+        // run only that folder's specs by setting a spec glob? keep first spec; runCypressE2E runs all discovered specs, so also filter
+        opts._cypressFolder = folder;
       }
       opts.runCypress = true;
       console.log(`  Cypress spec: ${opts.cypressSpec || 'full suite'}\n`);
