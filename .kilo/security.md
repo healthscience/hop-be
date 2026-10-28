@@ -54,3 +54,13 @@
 
 ## Approval workflow
 Audit reports only. User reviews the numbered list and approves specific finding IDs. Only approved findings are remediated via the Builder phase. Re-run tests after fixes.
+
+## 7. Additional security considerations
+- Websocket rate limiting / DoS protection and replay-attack mitigation.
+- Key rotation schedule and revocation procedures.
+- Supply-chain: npm audit + lockfile integrity verification.
+- Content Security Policy (CSP) and safe DOM rendering in BentoBoxDS.
+- Audit logging of authentication/authorisation events.
+- Least-privilege defaults and secret handling via env only.
+- Incident response / runbook reference.
+- v2 note: websocket removal changes the threat model; re-run audit.
