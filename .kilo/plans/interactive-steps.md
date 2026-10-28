@@ -25,3 +25,12 @@ After Orrery/Cypress tests:
 
 ## Coupling note (v1)
 BentoBoxDS ↔ HOP via websocket; run Both sequentially with air-gap delay (3s) for teardown.
+
+## Step 4 (refined) — Post-run menu (BentoBoxDS, interactive)
+After Cypress run:
+- `[1]` Test another folder (comma-separated supported)
+- `[2]` Perform security audit
+- `[3]` Perform privacy audit
+- `[4]` Back to BentoBoxDS folder menu
+- `[0]` Exit
+Audits return to menu; `[4]` re-prompts folder selection.
