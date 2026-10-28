@@ -1730,6 +1730,10 @@ async function runPipeline() {
                   console.log('  MCP URL added.');
                 } catch (e) { console.log('  Failed to save MCP URL:', e.message); }
               }
+            } else if (sci === 5) {
+              opts._restartInteractive = true;
+              secMenu = false;
+              inMenu = false;
             } else {
               secMenu = false;
             }
@@ -1739,6 +1743,7 @@ async function runPipeline() {
         } else {
           inMenu = false;
         }
+        if (opts._restartInteractive) inMenu = false;
       }
     }
 
@@ -1785,7 +1790,15 @@ async function runPipeline() {
   } catch (error) {
     console.error('\n❌ Pipeline halted due to error:', error.message);
   } finally {
-    process.exit(0);
+    if (opts._restartInteractive) {
+      opts.runCypress = false;
+      opts.testPath = null;
+      opts.cypressSpec = null;
+      opts._cypressFolder = null;
+      runPipeline();
+    } else {
+      process.exit(0);
+    }
   }
 }
 
