@@ -32,6 +32,7 @@ function parseArgs() {
     skipRelease: false,
     push: false,
     status: false,
+    statusCommentary: false,
     testAll: false,
     securityReview: false,
     privacyReview: false,
@@ -98,6 +99,9 @@ function parseArgs() {
         break;
       case '--status':
         opts.status = true;
+        break;
+      case '--status-commentary':
+        opts.statusCommentary = true;
         break;
       case '--test-all':
         opts.testAll = true;
@@ -1740,6 +1744,30 @@ function recommendCypressSpec(hopTestPath, cypressSpecs) {
   return cypressSpecs.find(s => s.relPath.includes('lifestrap')) || null;
 }
 
+async function runStatusCommentary(opts) {
+  console.log('=== Status Commentary (free agent) ===\n');
+  const statusPath = path.join(DEFAULT_TEST_REPO, 'artifacts', 'repo-status.json');
+  const runsPath = path.join(DEFAULT_TEST_REPO, 'artifacts', 'test-runs.json');
+  let status = {}; let runs = [];
+  try { status = JSON.parse(await fs.readFile(statusPath, 'utf8')); } catch {}
+  try { runs = JSON.parse(await fs.readFile(runsPath, 'utf8')); } catch {}
+
+  const promptText = `You are a status commentator. Given this repo status and test run history, write a short human-readable commentary (markdown) noting: repos not tested recently, improving/failing coverage, stale tests, and recommendations.\n\nSTATUS:\n${JSON.stringify(status, null, 2)}\n\nRUNS:${runs.length}\n${JSON.stringify(runs.slice(-20), null, 2)}`;
+
+  let output = '';
+  try {
+    const { execSync } = await import('node:child_process');
+    output = execSync(`kilo run --model kilo/kilo-auto/free ${JSON.stringify(promptText)}`, { encoding: 'utf8', timeout: 120000 });
+  } catch (e) {
+    output = `Commentary generation failed: ${e.message}`;
+  }
+
+  await fs.mkdir(path.join(DEFAULT_TEST_REPO, 'artifacts'), { recursive: true });
+  await fs.writeFile(path.join(DEFAULT_TEST_REPO, 'artifacts', 'status-commentary.md'), output);
+  console.log(output);
+  console.log('\nSaved to artifacts/status-commentary.md');
+}
+
 async function runPipeline() {
   const opts = parseArgs();
 
@@ -1754,6 +1782,10 @@ async function runPipeline() {
   }
   if (opts.runCypress && !opts.testAll && !opts.securityReview && !opts.confirm && !opts.releaseAll && !opts.auto && !opts.status) {
     await runCypressE2E(opts);
+    process.exit(0);
+  }
+  if (opts.statusCommentary && !opts.testAll && !opts.securityReview && !opts.confirm && !opts.releaseAll && !opts.coupling && !opts.auto) {
+    await runStatusCommentary(opts);
     process.exit(0);
   }
   if (opts.status && !opts.testAll && !opts.securityReview && !opts.confirm && !opts.releaseAll && !opts.coupling && !opts.auto) {

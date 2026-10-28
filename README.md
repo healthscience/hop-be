@@ -25,6 +25,7 @@ node src/index.js [options]
 | `--release-type <type>` | Version bump type: `patch`, `minor`, `major` (default: `patch`) |
 | `--push` | Push git commit to remote after release commit |
 | `--status` | Show status matrix of all active repos |
+| `--status-commentary` | Generate AI commentary on status/test history (free agent) |
 | `--test-all` | Run sequential package testing (Phase 1) |
 | `--coupling` | Run BentoBoxDS E2E coupling tests (Phase 2) |
 | `--security-review` / `--secure` | Run security review (Phase 3) |
