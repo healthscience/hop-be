@@ -1263,13 +1263,116 @@ async function runPrivacyReview(opts) {
       } catch {}
     }
   }
+  const findings = issues.map((i, idx) => ({
+    id: `PRIV-SELF-${idx + 1}`,
+    severity: 'medium',
+    file: '',
+    line: 0,
+    title: i,
+    description: i,
+    recommendation: 'Review and remediate the flagged pattern.',
+    approved: false,
+    status: 'open',
+    source: 'beebee',
+  }));
+  await fs.mkdir(path.join(DEFAULT_TEST_REPO, 'artifacts'), { recursive: true });
+  await fs.writeFile(
+    path.join(DEFAULT_TEST_REPO, 'artifacts', 'privacy-audit.json'),
+    JSON.stringify({ findings, summary: { total: findings.length }, timestamp: new Date().toISOString() }, null, 2)
+  );
+
   if (issues.length > 0) {
     console.log(`  ✗ ${issues.length} privacy issue(s):`);
-    issues.forEach(i => console.log(`    - ${i}`));
-    return { status: 'VETO', issues };
+    issues.forEach((i, idx) => console.log(`    [PRIV-SELF-${idx + 1}] ${i}`));
+    return { status: 'VETO', issues, findings };
   }
   console.log('  ✓ Privacy review CLEAR\n');
-  return { status: 'PASS' };
+  return { status: 'PASS', findings };
+}
+
+async function viewPrivacyReport(opts) {
+  const p = path.join(opts.testRepo, 'artifacts', 'privacy-audit.json');
+  let data = { findings: [] };
+  try { data = JSON.parse(await fs.readFile(p, 'utf8')); } catch {}
+  console.log('\n=== Privacy Audit Report ===');
+  if (!data.findings || data.findings.length === 0) { console.log('  No findings.'); return; }
+  data.findings.forEach(f => {
+    console.log(`  [${f.id}] (${f.severity}) ${f.title}`);
+    if (f.file) console.log(`      ${f.file}:${f.line}`);
+    if (f.description) console.log(`      ${f.description}`);
+    if (f.recommendation) console.log(`      -> ${f.recommendation}`);
+  });
+  console.log(`  Total: ${data.findings.length}\n`);
+}
+
+async function runModelPrivacyAudit(opts, channel) {
+  console.log(`=== Privacy Audit via ${channel} ===\n`);
+  const cfgPath = path.join(opts.testRepo, '.kilo', 'security-apis.json');
+  let cfg = { apis: [], mcpUrls: [] };
+  try { cfg = JSON.parse(await fs.readFile(cfgPath, 'utf8')); } catch {}
+  const api = cfg.apis.find(a => a.name === channel);
+  if (!api) { console.log(`  No config for ${channel}.`); return { status: 'SKIPPED' }; }
+  const apiKey = process.env[api.apiKeyEnv];
+  if (!apiKey) { console.log(`  Missing env ${api.apiKeyEnv}. Skipping.`); return { status: 'SKIPPED' }; }
+  const modelAnswer = await prompt(`  Model [${api.model}]: `);
+  if (modelAnswer.trim()) api.model = modelAnswer.trim();
+
+  let remit = 'You are a privacy auditor. Review code for PII exposure, data leakage, insecure storage, logging of sensitive data, consent/access boundaries. Return JSON array of findings with fields: id, severity, file, line, title, description, recommendation.\n\n';
+  remit += `Scope: BentoBoxDS selected folder (${opts._cypressFolder || 'all'}), src/, HOP websocket server.\n\n`;
+  const bentoboxRepo = opts.bentoboxRepo;
+  let files = [];
+  try {
+    const entries = await fs.readdir(bentoboxRepo, { recursive: true });
+    for (const e of entries) {
+      if (typeof e !== 'string' || (!e.endsWith('.js') && !e.endsWith('.cy.js')) || e.includes('node_modules')) continue;
+      if (opts._cypressFolder && opts._cypressFolder !== '(root)' && !e.includes(opts._cypressFolder) && !e.startsWith('src')) continue;
+      files.push(e);
+    }
+  } catch {}
+  for (const f of files.slice(0, 20)) {
+    try { const c = await fs.readFile(path.join(bentoboxRepo, f), 'utf8'); remit += `--- ${f} ---\n${c.slice(0, 4000)}\n`; } catch {}
+  }
+  try { const hopC = await fs.readFile(path.join(opts.hopRepo, 'src', 'index.js'), 'utf8'); remit += `--- hop/src/index.js ---\n${hopC.slice(0, 4000)}\n`; } catch {}
+
+  let findings = [];
+  try {
+    if (channel === 'openai') {
+      const res = await fetch(`${api.baseUrl}/chat/completions`, { method: 'POST', headers: { 'Authorization': `Bearer ${apiKey}`, 'Content-Type': 'application/json' }, body: JSON.stringify({ model: api.model, messages: [{ role: 'user', content: remit }], temperature: 0.2 }) });
+      const data = await res.json();
+      const text = data?.choices?.[0]?.message?.content || '[]';
+      const m = text.match(/\[[\s\S]*\]/);
+      findings = m ? JSON.parse(m[0]) : [];
+    } else if (channel === 'claude') {
+      const res = await fetch(`${api.baseUrl}/messages`, { method: 'POST', headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01', 'Content-Type': 'application/json' }, body: JSON.stringify({ model: api.model, max_tokens: 4096, messages: [{ role: 'user', content: remit }] }) });
+      const data = await res.json();
+      const text = data?.content?.[0]?.text || '[]';
+      const m = text.match(/\[[\s\S]*\]/);
+      findings = m ? JSON.parse(m[0]) : [];
+    }
+  } catch (e) { console.log(`  ${channel} privacy audit failed: ${e.message}`); }
+
+  const normalized = findings.map((f, idx) => ({
+    id: `PRIV-${channel.toUpperCase()}-${idx + 1}`,
+    severity: f.severity || 'medium',
+    file: f.file || '',
+    line: f.line || 0,
+    title: f.title || 'Finding',
+    description: f.description || '',
+    recommendation: f.recommendation || '',
+    approved: false,
+    status: 'open',
+    source: channel,
+  }));
+
+  const auditPath = path.join(opts.testRepo, 'artifacts', 'privacy-audit.json');
+  let existing = { findings: [] };
+  try { existing = JSON.parse(await fs.readFile(auditPath, 'utf8')); } catch {}
+  const merged = [...(existing.findings || []), ...normalized];
+  await fs.mkdir(path.join(opts.testRepo, 'artifacts'), { recursive: true });
+  await fs.writeFile(auditPath, JSON.stringify({ findings: merged, summary: { total: merged.length }, timestamp: new Date().toISOString() }, null, 2));
+  console.log(`  ${channel}: ${normalized.length} findings. Total: ${merged.length}.`);
+  normalized.forEach(f => console.log(`    [${f.id}] (${f.severity}) ${f.title}`));
+  return { status: 'PASS', findings: normalized };
 }
 
 async function viewSecurityReport(opts) {
@@ -1739,7 +1842,47 @@ async function runPipeline() {
             }
           }
         } else if (ci === 3) {
-          await runPrivacyReview(opts);
+          let privMenu = true;
+          while (privMenu) {
+            console.log('\n  Privacy audit options:');
+            console.log('    [1] Beebee self privacy review');
+            console.log('    [2] OpenAI model');
+            console.log('    [3] Claude model');
+            console.log('    [4] Other (MCP add url)');
+            console.log('    [5] Back to start');
+            const pc = await prompt('  Select [5]: ');
+            const pci = parseInt(pc.trim(), 10);
+            if (pci === 1) {
+              await runPrivacyReview(opts);
+              await viewPrivacyReport(opts);
+              const vc = await prompt('  [1] View report  [2] Back to privacy menu: ');
+              if (vc.trim() === '1') await viewPrivacyReport(opts);
+            } else if (pci === 2 || pci === 3) {
+              const channel = pci === 2 ? 'openai' : 'claude';
+              await runModelPrivacyAudit(opts, channel);
+              await viewPrivacyReport(opts);
+              const vc = await prompt('  [1] View report  [2] Back to privacy menu: ');
+              if (vc.trim() === '1') await viewPrivacyReport(opts);
+            } else if (pci === 4) {
+              const url = await prompt('  MCP URL: ');
+              if (url.trim()) {
+                const cfgPath = path.join(opts.testRepo, '.kilo', 'security-apis.json');
+                try {
+                  const cfg = JSON.parse(await fs.readFile(cfgPath, 'utf8'));
+                  cfg.mcpUrls = cfg.mcpUrls || [];
+                  cfg.mcpUrls.push(url.trim());
+                  await fs.writeFile(cfgPath, JSON.stringify(cfg, null, 2));
+                  console.log('  MCP URL added.');
+                } catch (e) { console.log('  Failed to save MCP URL:', e.message); }
+              }
+            } else if (pci === 5) {
+              opts._restartInteractive = true;
+              privMenu = false;
+              inMenu = false;
+            } else {
+              privMenu = false;
+            }
+          }
         } else {
           inMenu = false;
         }
