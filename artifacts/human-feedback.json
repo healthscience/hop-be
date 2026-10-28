@@ -1,7 +1,6 @@
 {
   "testResult": "PASS",
-  "testTarget": "/var/www/html/hoprotocol/code/kiloagents/hop-be/test/smoke.test.js",
-  "timestamp": "2026-10-28T11:29:56.385Z",
-  "raw": "end",
-  "observations": "end"
+  "testTarget": "/var/www/html/hoprotocol/code/hop/test/crypto/hop-crypto-integration.test.js",
+  "timestamp": "2026-10-28T14:06:14.618Z",
+  "skipped": true
 }

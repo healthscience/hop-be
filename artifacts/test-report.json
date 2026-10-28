@@ -1,6 +1,6 @@
 {
   "status": "PASS",
-  "target": "/var/www/html/hoprotocol/code/kiloagents/hop-be/test/smoke.test.js",
-  "timestamp": "2026-10-28T11:29:39.184Z",
-  "repo": "/var/www/html/hoprotocol/code/kiloagents/hop-be"
+  "target": "/var/www/html/hoprotocol/code/hop/test/crypto/hop-crypto-integration.test.js",
+  "timestamp": "2026-10-28T14:01:15.645Z",
+  "repo": "/var/www/html/hoprotocol/code/hop"
 }

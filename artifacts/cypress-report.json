@@ -1,24 +1,24 @@
 {
   "status": "PASS",
-  "spec": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/account/accept-peer-invite.cy.js",
+  "spec": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/baseLayout/baseLayout-no-hop.cy.js",
   "totalSpecs": 4,
   "perSpec": [
     {
-      "spec": "cypress/e2e/account/accept-peer-invite.cy.js",
+      "spec": "cypress/e2e/baseLayout/baseLayout-no-hop.cy.js",
       "status": "PASS"
     },
     {
-      "spec": "cypress/e2e/account/account-tabs.cy.js",
+      "spec": "cypress/e2e/baseLayout/baseLayout.cy.js",
       "status": "PASS"
     },
     {
-      "spec": "cypress/e2e/account/generate-Invite.cy.js",
+      "spec": "cypress/e2e/baseLayout/mainNav/toolbarNavLayout.cy.js",
       "status": "PASS"
     },
     {
-      "spec": "cypress/e2e/account/listen-peer-accept.cy.js",
+      "spec": "cypress/e2e/baseLayout/welcomeBeebee/browserWelcome.cy.js",
       "status": "PASS"
     }
   ],
-  "timestamp": "2026-10-28T12:54:14.748Z"
+  "timestamp": "2026-10-28T13:59:05.237Z"
 }

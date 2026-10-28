@@ -628,5 +628,185 @@
     "status": "PASS",
     "detail": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/account/accept-peer-invite.cy.js",
     "timestamp": "2026-10-28T12:54:14.840Z"
+  },
+  {
+    "name": "cypress/e2e/connect/signIn.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:18:51.424Z"
+  },
+  {
+    "name": "cypress/e2e/connect/sovereignIdentity.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:19:49.519Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "PASS",
+    "detail": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/connect/signIn.cy.js",
+    "timestamp": "2026-10-28T13:19:49.668Z"
+  },
+  {
+    "name": "cypress/e2e/connect/signIn.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:20:52.669Z"
+  },
+  {
+    "name": "cypress/e2e/connect/sovereignIdentity.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:21:46.505Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "PASS",
+    "detail": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/connect/signIn.cy.js",
+    "timestamp": "2026-10-28T13:21:46.636Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/kiloagents/hop-be/test/smoke.test.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:27:58.114Z"
+  },
+  {
+    "name": "cypress/e2e/connect/signIn.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:28:58.961Z"
+  },
+  {
+    "name": "cypress/e2e/connect/sovereignIdentity.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:29:52.225Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "PASS",
+    "detail": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/connect/signIn.cy.js",
+    "timestamp": "2026-10-28T13:29:52.366Z"
+  },
+  {
+    "name": "cypress/e2e/connect/signIn.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:30:46.394Z"
+  },
+  {
+    "name": "cypress/e2e/connect/sovereignIdentity.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:31:45.558Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "PASS",
+    "detail": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/connect/signIn.cy.js",
+    "timestamp": "2026-10-28T13:31:45.687Z"
+  },
+  {
+    "name": "cypress/e2e/connect/signIn.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:36:28.691Z"
+  },
+  {
+    "name": "cypress/e2e/connect/sovereignIdentity.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:37:22.382Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "PASS",
+    "detail": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/connect/signIn.cy.js",
+    "timestamp": "2026-10-28T13:37:22.518Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/kiloagents/hop-be/test/smoke.test.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:41:15.456Z"
+  },
+  {
+    "name": "cypress/e2e/account/accept-peer-invite.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:53:25.670Z"
+  },
+  {
+    "name": "cypress/e2e/account/account-tabs.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:53:53.133Z"
+  },
+  {
+    "name": "cypress/e2e/account/generate-Invite.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:54:19.261Z"
+  },
+  {
+    "name": "cypress/e2e/account/listen-peer-accept.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:54:28.802Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "PASS",
+    "detail": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/account/accept-peer-invite.cy.js",
+    "timestamp": "2026-10-28T13:54:28.939Z"
+  },
+  {
+    "name": "cypress/e2e/account/accept-peer-invite.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:55:44.804Z"
+  },
+  {
+    "name": "cypress/e2e/account/account-tabs.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:56:11.815Z"
+  },
+  {
+    "name": "cypress/e2e/baseLayout/baseLayout-no-hop.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:58:01.509Z"
+  },
+  {
+    "name": "cypress/e2e/baseLayout/baseLayout.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:58:26.831Z"
+  },
+  {
+    "name": "cypress/e2e/baseLayout/mainNav/toolbarNavLayout.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:58:43.956Z"
+  },
+  {
+    "name": "cypress/e2e/baseLayout/welcomeBeebee/browserWelcome.cy.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T13:59:05.233Z"
+  },
+  {
+    "name": "bentoboxds-e2e",
+    "status": "PASS",
+    "detail": "/var/www/html/hoprotocol/code/bentoboxds/cypress/e2e/baseLayout/baseLayout-no-hop.cy.js",
+    "timestamp": "2026-10-28T13:59:05.371Z"
+  },
+  {
+    "name": "/var/www/html/hoprotocol/code/hop/test/crypto/hop-crypto-integration.test.js",
+    "status": "PASS",
+    "detail": "",
+    "timestamp": "2026-10-28T14:01:15.647Z"
   }
 ]
