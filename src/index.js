@@ -1312,9 +1312,15 @@ async function interactiveSetup(opts) {
   else opts.entryPoint = 'both';
   console.log(`  Entry point: ${opts.entryPoint}\n`);
 
-  const repoAnswer = await prompt(`  HOP repo path [default: ${opts.hopRepo}]: `);
-  if (repoAnswer.trim()) opts.hopRepo = path.resolve(repoAnswer.trim());
-  console.log(`  Using HOP repo: ${opts.hopRepo}\n`);
+  if (opts.entryPoint === 'bentoboxds') {
+    const repoAnswer = await prompt(`  BentoBoxDS repo path [default: ${opts.bentoboxRepo}]: `);
+    if (repoAnswer.trim()) opts.bentoboxRepo = path.resolve(repoAnswer.trim());
+    console.log(`  Using BentoBoxDS repo: ${opts.bentoboxRepo}\n`);
+  } else {
+    const repoAnswer = await prompt(`  HOP repo path [default: ${opts.hopRepo}]: `);
+    if (repoAnswer.trim()) opts.hopRepo = path.resolve(repoAnswer.trim());
+    console.log(`  Using HOP repo: ${opts.hopRepo}\n`);
+  }
 
   // Discover HOP vitest tests
   console.log('  Discovering HOP protocol tests (vitest)...');
@@ -1331,26 +1337,19 @@ async function interactiveSetup(opts) {
   // Step 2 — BentoBoxDS branch
   if (opts.entryPoint === 'bentoboxds' || opts.entryPoint === 'both') {
     if (cypressSpecs.length > 0) {
+      const folders = [...new Set(cypressSpecs.map(s => s.relPath.split('/')[0]))];
       console.log('  BentoBoxDS test selection:');
-      console.log('    [A] Full suite (all specs)  (default)');
-      console.log('    [B] Pick folder(s)');
-      console.log('    [C] Pick individual spec\n');
-      const sel = (await prompt('  Select [A]: ')).trim().toLowerCase();
-      if (sel === 'b') {
-        const folders = [...new Set(cypressSpecs.map(s => s.relPath.split('/')[0]))];
-        folders.forEach((f, i) => console.log(`    [${i + 1}] ${f}`));
-        const fc = await prompt('  Folder numbers (comma): ');
-        const idxs = fc.split(',').map(x => parseInt(x.trim(), 10)).filter(n => n > 0 && n <= folders.length);
-        const chosenFolders = idxs.map(n => folders[n - 1]);
-        const filtered = cypressSpecs.filter(s => chosenFolders.some(f => s.relPath.startsWith(f)));
-        if (filtered.length) opts.cypressSpec = filtered[0].path;
-      } else if (sel === 'c') {
-        cypressSpecs.forEach((s, i) => console.log(`    [${i + 1}] ${s.relPath}`));
-        const sc = await prompt('  Spec number: ');
-        const idx = parseInt(sc, 10);
-        if (idx > 0 && idx <= cypressSpecs.length) opts.cypressSpec = cypressSpecs[idx - 1].path;
-      } else {
+      console.log('    [1] Test all (full suite)  (default)');
+      folders.forEach((f, i) => console.log(`    [${i + 2}] ${f}`));
+      console.log('');
+      const sel = await prompt('  Select [1]: ');
+      const idx = parseInt(sel.trim(), 10);
+      if (idx === 1 || isNaN(idx) || idx < 2) {
         opts.cypressSpec = null; // full suite
+      } else if (idx - 2 >= 0 && idx - 2 < folders.length) {
+        const folder = folders[idx - 2];
+        const filtered = cypressSpecs.filter(s => s.relPath.startsWith(folder));
+        opts.cypressSpec = filtered.length ? filtered[0].path : null;
       }
       opts.runCypress = true;
       console.log(`  Cypress spec: ${opts.cypressSpec || 'full suite'}\n`);

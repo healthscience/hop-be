@@ -7,9 +7,8 @@ Prompt: `[1] BentoBoxDS` / `[2] hop-ecs` / `[3] Both` (default, recommended; v1 
 
 ## Step 2 — BentoBoxDS branch (if bentoboxds or both)
 Discover specs under `bentoboxRepo/cypress/e2e`.
-- `[A]` Full suite (default)
-- `[B]` Pick folder(s)
-- `[C]` Pick individual spec
+- `[1]` Test all (full suite) (default)
+- `[2..]` Numbered list of test folders
 Sets `opts.runCypress=true`, `opts.cypressSpec`.
 
 ## Step 3 — hop-ecs branch (if hop or both)
